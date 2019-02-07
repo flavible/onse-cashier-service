@@ -30,3 +30,11 @@ def assert_transaction_event_published(context, tx_type, account, amount):
     assert event['operation'] == tx_type, f"{event['operation']} != {tx_type}"
     assert event['status'] == 'accepted'
     assert event['amount'] == amount, f"{event['amount']} != {amount}"
+
+
+@then(u'I should receive a "BadRequest" response')
+def reject_response(context):
+    response = context.response
+    status_code = response.status_code
+    assert status_code == HTTPStatus.BAD_REQUEST.value, \
+        f'Expected status code to be 400; got {status_code}'

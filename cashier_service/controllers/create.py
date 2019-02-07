@@ -14,6 +14,8 @@ PAYLOAD_SCHEMA = Schema(dict(accountNumber=And(str, lambda s: len(s) == 8),
                              amount=And(int, lambda n: n > 0),
                              operation=lambda s: s in ['credit', 'debit']))
 
+VALUE_SCHEMA = Schema(And(int, lambda n: n < 501))
+
 
 @process.route('/create', methods=['POST'])
 def process_cashier_requests():
@@ -23,6 +25,8 @@ def process_cashier_requests():
     req_data = request.get_json()
 
     PAYLOAD_SCHEMA.validate(req_data)
+    if req_data["operation"] == 'debit':
+        VALUE_SCHEMA.validate(req_data["amount"])
 
     operation_id = str(uuid4())
     created = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
